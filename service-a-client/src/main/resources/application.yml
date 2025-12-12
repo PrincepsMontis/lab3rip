@@ -1,0 +1,13 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: service-a-client
+
+service-b:
+  base-url: http://localhost:8081
+
+logging:
+  level:
+    com.example.servicea: DEBUG

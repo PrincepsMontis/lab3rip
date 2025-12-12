@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: service-b-uuid-generator
+
+logging:
+  level:
+    com.example.serviceb: DEBUG

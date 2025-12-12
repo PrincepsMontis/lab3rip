@@ -1,0 +1,5 @@
+com/example/servicea/filter/LoggingFilter.class
+com/example/servicea/ServiceAApplication.class
+com/example/servicea/client/UuidClient.class
+com/example/servicea/config/WebClientConfig.class
+com/example/servicea/controller/UuidController.class

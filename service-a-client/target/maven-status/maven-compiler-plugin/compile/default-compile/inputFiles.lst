@@ -1,0 +1,5 @@
+/home/vagab/Documents/uuid-services/service-a-client/src/main/java/com/example/servicea/ServiceAApplication.java
+/home/vagab/Documents/uuid-services/service-a-client/src/main/java/com/example/servicea/client/UuidClient.java
+/home/vagab/Documents/uuid-services/service-a-client/src/main/java/com/example/servicea/config/WebClientConfig.java
+/home/vagab/Documents/uuid-services/service-a-client/src/main/java/com/example/servicea/controller/UuidController.java
+/home/vagab/Documents/uuid-services/service-a-client/src/main/java/com/example/servicea/filter/LoggingFilter.java
