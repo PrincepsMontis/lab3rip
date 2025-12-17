@@ -1,6 +1,6 @@
 package com.example.serviceb.controller;
 
-import com.example.serviceb.service.InefficientUuidService;
+import com.example.serviceb.service.UuidServiceFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -14,28 +14,38 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UuidGeneratorController {
 
-    private final InefficientUuidService uuidService;
+    private final UuidServiceFacade facade;
 
-    // GET /api/uuid/single — один UUID (Mono)
+    // GET /api/uuid/single?mode=inefficient|optimized
     @GetMapping("/single")
-    public Mono<String> generateSingleUuid() {
-        log.info("Запрос на генерацию одного UUID");
-        return uuidService.generateUuidMono()
-                .doOnSuccess(uuid -> log.info("Отправлен UUID: {}", uuid));
+    public Mono<String> generateSingleUuid(
+            @RequestParam(defaultValue = "inefficient") String mode
+    ) {
+        log.info("Запрос на генерацию одного UUID, mode={}", mode);
+        return facade.one(mode)
+                .doOnSuccess(uuid -> log.info("Отправлен UUID (mode={}): {}", mode, uuid));
     }
 
-    // GET /api/uuid/batch?count=5 — несколько UUID (Flux)
+    // GET /api/uuid/batch?count=5&mode=inefficient|optimized
     @GetMapping(value = "/batch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> generateBatchUuid(@RequestParam(defaultValue = "3") int count) {
-        log.info("Запрос на генерацию {} UUID", count);
-        return uuidService.generateUuidFlux(count)
-                .doOnComplete(() -> log.info("Все UUID отправлены"));
+    public Flux<String> generateBatchUuid(
+            @RequestParam(defaultValue = "3") int count,
+            @RequestParam(defaultValue = "inefficient") String mode
+    ) {
+        log.info("Запрос на генерацию {} UUID, mode={}", count, mode);
+        return facade.many(mode, count)
+                .doOnComplete(() -> log.info("Все UUID отправлены, mode={}", mode));
     }
 
-    // POST /api/uuid/custom — пример POST, логика генерации та же
+    // POST /api/uuid/custom?mode=...
+    // seed оставляем для совместимости, но генерация зависит от mode
     @PostMapping("/custom")
-    public Mono<String> generateCustomUuid(@RequestBody String seed) {
-        log.info("Запрос с seed: {}", seed);
-        return uuidService.generateUuidMono();
+    public Mono<String> generateCustomUuid(
+            @RequestBody String seed,
+            @RequestParam(defaultValue = "inefficient") String mode
+    ) {
+        log.info("Запрос с seed='{}', mode={}", seed, mode);
+        return facade.one(mode)
+                .doOnSuccess(uuid -> log.info("Отправлен custom UUID (mode={}): {}", mode, uuid));
     }
 }
