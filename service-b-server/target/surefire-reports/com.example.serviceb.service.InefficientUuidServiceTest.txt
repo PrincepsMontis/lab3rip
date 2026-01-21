@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.example.serviceb.service.InefficientUuidServiceTest
--------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.206 s -- in com.example.serviceb.service.InefficientUuidServiceTest

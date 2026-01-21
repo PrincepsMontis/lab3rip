@@ -5,63 +5,61 @@
 - **Service A** → отправляет запрос на генерацию UUID (WebClient, Mono/Flux).
 - **Service B** → генерирует UUID (намеренно неэффективно в baseline-версии).
 
-## Цель работы
-Научиться выявлять и устранять узкие места в Java-приложениях с помощью современных профилировщиков и оптимизировать серверный микросервис **Service B** из ЛР2, который был реализован «неэффективно».
 
-## Инструменты профилирования
-- Java Flight Recorder (JFR)
-- Java Mission Control (JMC)
-- VisualVM
-- Async Profiler
-- (опционально) IntelliJ Profiler
-
-## Hot spots (ожидаемые узкие места)
-- Создание `SecureRandom` на каждый запрос.
-- Использование `String.format(...)` и создание лишних временных объектов.
-- Лишние преобразования (например, многократные encode/decode) и рефлексия.
-
-## План выполнения (до/после)
-1. Запустить **Service B** в режиме, удобном для профилирования.
-2. Под нагрузкой собрать профили:
-   - CPU hot spots
-   - Allocation hot spots (аллокации/GC pressure)
-3. Описать найденные проблемы (что именно горячее и почему).
-4. Оптимизировать код:
-   - реиспользовать генератор (`SecureRandom` как singleton/поле)
-   - убрать `String.format`, заменить на `StringBuilder`
-   - убрать/сократить лишние преобразования и промежуточные строки
-5. Повторно провести профилирование.
-6. Сравнить результаты «до/после» (CPU/alloc, время ответа).
 
 ## Запуск сервисов
-### Service B (сервер)
+В одном терминале запустите Service B (с JFR):
 
+```bash
+cd service-b-server
+./mvnw clean package -DskipTests
+java -XX:StartFlightRecording=filename=profile.jfr,dumponexit=true,settings=profile \
+  -jar target/service-b-server-1.0.0.jar --server.port=8081
+
+```
+Во втором терминале запустите Service A: 
 ```bash
 cd service-a-client
-./mvnw spring-boot:run
+./mvnw clean package -DskipTests
+java -jar target/service-a-client-1.0.0.jar
 ```
 
-### Service A (клиент, если требуется)
+## Генерация нагрузки
+Ниже — два варианта нагрузки: напрямую на B и через A (A вызывает B по WebClient). Эндпоинты заданы контроллерами /api/uuid/* и /client/uuid/*
 
+Нагрузка напрямую на Service B (inefficient)
 ```bash
-cd service-a-client
-./mvnw spring-boot:run
+for i in $(seq 1 5000); do \
+  curl -s "http://localhost:8081/api/uuid/single?mode=inefficient" > /dev/null; \
+done
 ```
 
-## Проверка эндпоинтов Service B
-
+Нагрузка напрямую на Service B (optimized)
 ```bash
-curl http://localhost:8081/api/uuid/single
-curl http://localhost:8081/api/uuid/batch?count=10
+for i in $(seq 1 5000); do \
+  curl -s "http://localhost:8081/api/uuid/single?mode=optimized" > /dev/null; \
+done
 ```
 
+Нагрузка через Service A (A → B)
+```bash
+for i in $(seq 1 5000); do \
+  curl -s "http://localhost:8082/client/uuid/single" > /dev/null; \
+done
+```
 
-## Ожидаемый результат
-- В baseline (неоптимальной версии) профилировщики показывают значимые CPU/alloc hot spots в местах:
-  - `new SecureRandom()`
-  - `String.format(...)`
-  - лишних преобразований/конкатенаций
-- После оптимизации снижаются:
-  - число аллокаций (alloc hot spots)
-  - доля CPU времени в “горячих” методах
-  - задержка ответа на запросы
+## Анализ профилей
+### Открытие профиля в Java Mission Control (JMC)
+
+После остановки Service B файл profile.jfr появится в директории, где запускалась команда  
+Действия:
+1. **Открытие файла профиля**:
+   - После остановки Service B файл `profile.jfr` появится в текущей директории
+   - Запустите JMC: `jmc` или через GUI
+   - Меню: File → Open File → выберите `profile.jfr`
+
+## Что было оптимизировано
+
+- Убрано создание SecureRandom на каждый запрос → генератор переиспользуется.
+- String.format(...) заменён на более лёгкое формирование строки (например, StringBuilder) для снижения аллокаций.
+- Сокращены лишние преобразования/промежуточные строки.

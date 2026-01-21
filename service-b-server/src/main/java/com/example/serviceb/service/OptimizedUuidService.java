@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 
-@Service
+@Service("optimizedUuidService")
 public class OptimizedUuidService implements UuidGenerator {
 
     // Главное улучшение: переиспользуем RNG (нет new SecureRandom на каждый запрос)

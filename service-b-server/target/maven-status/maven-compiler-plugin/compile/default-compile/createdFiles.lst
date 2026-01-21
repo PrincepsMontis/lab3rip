@@ -1,4 +1,7 @@
+com/example/serviceb/service/UuidGenerator.class
+com/example/serviceb/filter/ServerLoggingFilter.class
+com/example/serviceb/service/OptimizedUuidService.class
+com/example/serviceb/service/InefficientUuidService.class
 com/example/serviceb/controller/UuidGeneratorController.class
 com/example/serviceb/ServiceBApplication.class
-com/example/serviceb/filter/ServerLoggingFilter.class
-com/example/serviceb/service/InefficientUuidService.class
+com/example/serviceb/service/UuidServiceFacade.class

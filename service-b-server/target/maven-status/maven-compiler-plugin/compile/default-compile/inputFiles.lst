@@ -2,3 +2,6 @@
 /home/vagab/Documents/uuid-services/service-b-server/src/main/java/com/example/serviceb/controller/UuidGeneratorController.java
 /home/vagab/Documents/uuid-services/service-b-server/src/main/java/com/example/serviceb/filter/ServerLoggingFilter.java
 /home/vagab/Documents/uuid-services/service-b-server/src/main/java/com/example/serviceb/service/InefficientUuidService.java
+/home/vagab/Documents/uuid-services/service-b-server/src/main/java/com/example/serviceb/service/OptimizedUuidService.java
+/home/vagab/Documents/uuid-services/service-b-server/src/main/java/com/example/serviceb/service/UuidGenerator.java
+/home/vagab/Documents/uuid-services/service-b-server/src/main/java/com/example/serviceb/service/UuidServiceFacade.java

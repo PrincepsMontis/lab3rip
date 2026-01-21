@@ -12,8 +12,18 @@ import java.util.Base64;
 import java.util.Random;
 
 @Slf4j
-@Service
-public class InefficientUuidService {
+@Service("inefficientUuidService")
+public class InefficientUuidService implements UuidGenerator {
+
+    @Override
+    public Mono<String> generateOne() {
+        return generateUuidMono();
+    }
+
+    @Override
+    public Flux<String> generateMany(int count) {
+        return generateUuidFlux(count);
+    }
 
     // Неоптимальная генерация UUID (Mono)
     public Mono<String> generateUuidMono() {
